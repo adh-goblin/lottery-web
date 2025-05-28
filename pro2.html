@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>沐恩中學畢業晚宴抽獎</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'SimSun', serif;
+      background: linear-gradient(to bottom, #f6f1eb, #e6ded2);
+      color: #3c2f2f;
+    }
+    .box {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 5px;
+      border: 2px solid #9c8a7a;
+      border-radius: 8px;
+      background-color: #fffdf8;
+      font-size: 0.87rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .highlight {
+      background-color: #ffe66d !important;
+      box-shadow: 0 0 15px 5px rgba(255, 230, 109, 0.9);
+      transform: scale(1.1);
+    }
+    .confetti {
+      position: fixed;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: fall 3s linear forwards;
+      z-index: 100;
+    }
+    @keyframes fall {
+      0% {transform: translateY(0); opacity: 1;}
+      100% {transform: translateY(100vh); opacity: 0;}
+    }
+  </style>
+</head>
+<body class="min-h-screen p-8">
+  <div class="text-center mb-6">
+    <h1 class="text-4xl font-bold mb-2">沐恩中學畢業晚宴抽獎</h1>
+    <div id="winnerDisplay" class="text-2xl text-red-700 font-semibold mt-4"></div>
+  </div> <div class="flex justify-center items-center gap-4 mb-4">
+    <input type="file" id="fileInput" class="border p-2">
+    <input type="number" id="drawCount" class="border p-2 w-24" placeholder="抽幾個？" min="1">
+    <button onclick="startDraw()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">開始抽獎</button>
+    <button onclick="showWinners()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">中獎者記錄</button>
+  </div> <div id="grid" class="flex flex-wrap justify-center"></div> <div id="recordPanel" class="mt-8 hidden text-center">
+    <h2 class="text-xl font-bold mb-2">中獎者記錄</h2>
+    <ul id="recordList" class="space-y-1"></ul>
+  </div> <script>
+    let names = [];
+    let boxes = [];
+    let interval;
+    let winners = [];
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        names = json.flat().filter(n => n);
+        renderGrid();
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    function renderGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      boxes = [];
+      names.forEach(name => {
+        const div = document.createElement('div');
+        div.className = 'box';
+        div.textContent = name;
+        grid.appendChild(div);
+        boxes.push(div);
+      });
+    }
+
+    function startDraw() {
+      const winnerDisplay = document.getElementById('winnerDisplay');
+      winnerDisplay.textContent = '';
+      document.getElementById('recordPanel').classList.add('hidden');
+      const drawCount = parseInt(document.getElementById('drawCount').value);
+      if (!drawCount || drawCount < 1 || boxes.length < drawCount) return alert('請輸入有效人數');
+
+      let index = 0;
+      clearInterval(interval);
+
+      interval = setInterval(() => {
+        boxes.forEach(b => b.classList.remove('highlight'));
+        boxes[index].classList.add('highlight');
+        index = (index + 1) % boxes.length;
+      }, 25);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        boxes.forEach(b => b.classList.remove('highlight'));
+
+        let selected = [];
+        while (selected.length < drawCount) {
+          const idx = Math.floor(Math.random() * boxes.length);
+          if (!selected.includes(idx)) selected.push(idx);
+        }
+
+        selected.sort((a,b) => b - a);
+
+        selected.forEach(idx => {
+          const box = boxes[idx];
+          const name = box.textContent;
+          winners.push(name);
+          box.remove();
+          boxes.splice(idx, 1);
+          names.splice(idx, 1);
+          launchConfetti();
+          winnerDisplay.textContent += `恭喜 ${name} 中獎！ `;
+        });
+      }, 3000);
+    }
+
+    function showWinners() {
+      const panel = document.getElementById('recordPanel');
+      const list = document.getElementById('recordList');
+      list.innerHTML = '';
+      winners.forEach((name, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${i + 1}. ${name}`;
+        list.appendChild(li);
+      });
+      panel.classList.remove('hidden');
+    }
+
+    function launchConfetti() {
+      for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 90%, 60%)`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+  </script></body>
+</html>
