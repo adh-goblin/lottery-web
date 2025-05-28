@@ -1,72 +1,138 @@
 <!DOCTYPE html><html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>畢業晚宴抽獎</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <style>
     body {
       font-family: 'SimSun', serif;
-      background: linear-gradient(to bottom, #f6f1eb, #e6ded2);
-      color: #3c2f2f;
-    }
-    .box {
-      width: 100px;
-      height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 5px;
-      border: 2px solid #9c8a7a;
-      border-radius: 8px;
-      background-color: #fffdf8;
-      font-size: 0.87rem;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .highlight {
-      background-color: #ffe66d !important;
-      box-shadow: 0 0 15px 5px rgba(255, 230, 109, 0.9);
-      transform: scale(1.1);
-    }
-    .confetti {
-      position: fixed;
-      top: 0;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      animation: fall 3s linear forwards;
-      z-index: 100;
-    }
-    @keyframes fall {
-      0% {transform: translateY(0); opacity: 1;}
-      100% {transform: translateY(100vh); opacity: 0;}
-    }
+      background-color: #f6f1eb;
+      color: #3a2c2a;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input[type="file"],
+button,
+input[type="number"] {
+  font-size: 1.25em;
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #bcae99;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+.box {
+  background-color: #e2d3c1;
+  border: 2px solid #8d7764;
+  padding: 10px;
+  font-size: 0.91em;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.highlight {
+  border: 3px solid gold;
+  background-color: #fff8dc;
+  box-shadow: 0 0 25px gold, 0 0 10px rgba(255, 215, 0, 0.6);
+  transform: scale(1.2);
+  animation: glow 0.4s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px gold; }
+  50% { box-shadow: 0 0 30px gold; transform: scale(1.3); }
+  100% { box-shadow: 0 0 5px gold; }
+}
+
+#winnerDisplay {
+  margin-top: 30px;
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #a1440a;
+}
+
+.confetti {
+  position: fixed;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: fall 3s linear forwards;
+  z-index: 1000;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+#historyModal {
+  display: none;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 2px solid #8d7764;
+  padding: 20px;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 9999;
+}
+
+#historyModal h2 {
+  font-size: 1.5em;
+}
+
+#historyModal ul {
+  text-align: left;
+  padding-left: 20px;
+}
+
   </style>
 </head>
-<body class="min-h-screen p-8">
-  <div class="text-center mb-6">
-    <h1 class="text-4xl font-bold mb-2">畢業晚宴抽獎</h1>
-    <div id="winnerDisplay" class="text-2xl text-red-700 font-semibold mt-4"></div>
-  </div> <div class="flex justify-center items-center gap-4 mb-4">
-    <input type="file" id="fileInput" class="border p-2">
-    <input type="number" id="drawCount" class="border p-2 w-24" placeholder="抽幾個？" min="1">
-    <button onclick="startDraw()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">開始抽獎</button>
-    <button onclick="showWinners()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">中獎者記錄</button>
-  </div> <div id="grid" class="flex flex-wrap justify-center"></div> <div id="recordPanel" class="mt-8 hidden text-center">
-    <h2 class="text-xl font-bold mb-2">中獎者記錄</h2>
-    <ul id="recordList" class="space-y-1"></ul>
-  </div> <script>
+<body>
+  <h1>畢業晚宴抽獎</h1>  <input type="file" id="fileInput" accept=".xlsx, .xls" />
+  <input type="number" id="drawCount" value="1" min="1" style="width: 60px" />
+  <button onclick="startDraw()">開始抽獎</button>
+  <button onclick="showHistory()">中獎者記錄</button>  <div id="grid"></div>
+  <div id="winnerDisplay"></div>  <div id="historyModal">
+    <h2>中獎者記錄</h2>
+    <ul id="historyList"></ul>
+    <button onclick="closeHistory()">關閉</button>
+  </div>  <script>
     let names = [];
     let boxes = [];
     let interval;
-    let winners = [];
+    let history = [];
+    let drawCounter = 1;
 
-    document.getElementById('fileInput').addEventListener('change', function(e) {
+    document.getElementById('fileInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
+      if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
+
+      reader.onload = function (event) {
+        const data = new Uint8Array(event.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -74,6 +140,7 @@
         names = json.flat().filter(n => n);
         renderGrid();
       };
+
       reader.readAsArrayBuffer(file);
     });
 
@@ -91,11 +158,9 @@
     }
 
     function startDraw() {
-      const winnerDisplay = document.getElementById('winnerDisplay');
-      winnerDisplay.textContent = '';
-      document.getElementById('recordPanel').classList.add('hidden');
       const drawCount = parseInt(document.getElementById('drawCount').value);
-      if (!drawCount || drawCount < 1 || boxes.length < drawCount) return alert('請輸入有效人數');
+      if (boxes.length === 0 || drawCount <= 0) return;
+      document.getElementById('winnerDisplay').textContent = '';
 
       let index = 0;
       clearInterval(interval);
@@ -110,48 +175,53 @@
         clearInterval(interval);
         boxes.forEach(b => b.classList.remove('highlight'));
 
-        let selected = [];
-        while (selected.length < drawCount) {
-          const idx = Math.floor(Math.random() * boxes.length);
-          if (!selected.includes(idx)) selected.push(idx);
+        let winners = [];
+        for (let i = 0; i < drawCount && boxes.length > 0; i++) {
+          const selectedIndex = Math.floor(Math.random() * boxes.length);
+          const selectedBox = boxes[selectedIndex];
+          const selectedName = selectedBox.textContent;
+
+          winners.push(selectedName);
+
+          selectedBox.remove();
+          names.splice(selectedIndex, 1);
+          boxes.splice(selectedIndex, 1);
         }
 
-        selected.sort((a,b) => b - a);
+        document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
 
-        selected.forEach(idx => {
-          const box = boxes[idx];
-          const name = box.textContent;
-          winners.push(name);
-          box.remove();
-          boxes.splice(idx, 1);
-          names.splice(idx, 1);
-          launchConfetti();
-          winnerDisplay.textContent += `恭喜 ${name} 中獎！ `;
-        });
+        history.push(`${drawCounter}. ${winners.join('、')}`);
+        drawCounter++;
+
+        launchConfetti();
       }, 3000);
     }
 
-    function showWinners() {
-      const panel = document.getElementById('recordPanel');
-      const list = document.getElementById('recordList');
-      list.innerHTML = '';
-      winners.forEach((name, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${i + 1}. ${name}`;
-        list.appendChild(li);
-      });
-      panel.classList.remove('hidden');
-    }
-
     function launchConfetti() {
-      for (let i = 0; i < 80; i++) {
+      for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
         confetti.style.left = Math.random() * window.innerWidth + 'px';
-        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 90%, 60%)`;
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
         document.body.appendChild(confetti);
         setTimeout(() => confetti.remove(), 3000);
       }
     }
+
+    function showHistory() {
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '';
+      history.forEach(record => {
+        const li = document.createElement('li');
+        li.textContent = record;
+        historyList.appendChild(li);
+      });
+      document.getElementById('historyModal').style.display = 'block';
+    }
+
+    function closeHistory() {
+      document.getElementById('historyModal').style.display = 'none';
+    }
   </script></body>
 </html>
+
