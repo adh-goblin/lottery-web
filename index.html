@@ -1,15 +1,11 @@
 <!DOCTYPE html><html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <!-- SEO 相關內容：在此區新增 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content=" Graduation Dinner 抽獎活動網站" />
   <meta name="keywords" content="SALEM, Immanuel, 畢業晚宴, 抽獎, 中學, 抽獎系統, 網站" />
   <meta name="author" content="ADH" />
   <meta name="robots" content="index, follow" />
-
-  <title>Graduation Draw</title>
   <title>畢業晚宴抽獎</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <style>
@@ -20,217 +16,216 @@
       text-align: center;
       margin: 0;
       padding: 20px;
-    }h1 {
-  font-size: 2.5em;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-input[type="file"],
-button,
-input[type="number"] {
-  font-size: 1.25em;
-  margin: 10px;
-  padding: 10px 20px;
-  background-color: #bcae99;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 10px;
-  max-width: 1000px;
-  margin: 20px auto;
-}
-
-.box {
-  background-color: #e2d3c1;
-  border: 2px solid #8d7764;
-  padding: 10px;
-  font-size: 0.91em;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-}
-
-.highlight {
-  border: 3px solid gold;
-  background-color: #fff8dc;
-  box-shadow: 0 0 25px gold, 0 0 10px rgba(255, 215, 0, 0.6);
-  transform: scale(1.2);
-  animation: glow 0.4s ease-in-out infinite alternate;
-  z-index: 1;
-}
-
-@keyframes glow {
-  0% { box-shadow: 0 0 5px gold; }
-  50% { box-shadow: 0 0 30px gold; transform: scale(1.3); }
-  100% { box-shadow: 0 0 5px gold; }
-}
-
-#winnerDisplay {
-  margin-top: 30px;
-  font-size: 2.5em;
-  font-weight: bold;
-  color: #a1440a;
-}
-
-.confetti {
-  position: fixed;
-  top: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  animation: fall 3s linear forwards;
-  z-index: 1000;
-}
-
-@keyframes fall {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(100vh); opacity: 0; }
-}
-
-#historyModal {
-  display: none;
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fff;
-  border: 2px solid #8d7764;
-  padding: 20px;
-  max-width: 400px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  z-index: 9999;
-}
-
-#historyModal h2 {
-  font-size: 1.5em;
-}
-
-#historyModal ul {
-  text-align: left;
-  padding-left: 20px;
-}
-
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    input[type="file"],
+    button,
+    input[type="number"],
+    input[type="text"] {
+      font-size: 1.25em;
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #bcae99;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      max-width: 1000px;
+      margin: 20px auto;
+    }
+    .box {
+      background-color: #e2d3c1;
+      border: 2px solid #8d7764;
+      padding: 10px;
+      font-size: 0.91em;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    .highlight {
+      border: 3px solid gold;
+      background-color: #fff8dc;
+      box-shadow: 0 0 25px gold, 0 0 10px rgba(255, 215, 0, 0.6);
+      transform: scale(1.2);
+      animation: glow 0.4s ease-in-out infinite alternate;
+      z-index: 1;
+    }
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px gold; }
+      50% { box-shadow: 0 0 30px gold; transform: scale(1.3); }
+      100% { box-shadow: 0 0 5px gold; }
+    }
+    #winnerDisplay {
+      margin-top: 30px;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #a1440a;
+    }
+    .confetti {
+      position: fixed;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: fall 3s linear forwards;
+      z-index: 1000;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    #historyModal {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 2px solid #8d7764;
+      padding: 20px;
+      max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 9999;
+    }
+    #historyModal h2 {
+      font-size: 1.5em;
+    }
+    #historyModal ul {
+      text-align: left;
+      padding-left: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>畢業晚宴抽獎</h1>  <input type="file" id="fileInput" accept=".xlsx, .xls" />
-  <input type="number" id="drawCount" value="1" min="1" style="width: 60px" />
+  <h1>畢業晚宴抽獎</h1>
+  <input type="file" id="fileInput" accept=".xlsx, .xls" />
+  <input type="text" id="drawCount" value="1" style="width: 80px" />
   <button onclick="startDraw()">開始抽獎</button>
-  <button onclick="showHistory()">中獎者記錄</button>  <div id="grid"></div>
-  <div id="winnerDisplay"></div>  <div id="historyModal">
+  <button onclick="showHistory()">中獎者記錄</button>
+  <div id="grid"></div>
+  <div id="winnerDisplay"></div>
+  <div id="historyModal">
     <h2>中獎者記錄</h2>
     <ul id="historyList"></ul>
     <button onclick="closeHistory()">關閉</button>
-  </div>  <script>
+  </div>
+  <script>
     let names = [];
     let boxes = [];
     let interval;
     let history = [];
-    let drawCounter = 1;
+    let drawCounter = 1;document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const data = new Uint8Array(event.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    names = json.flat().filter(n => n);
+    renderGrid();
+  };
+  reader.readAsArrayBuffer(file);
+});
 
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  boxes = [];
+  names.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'box';
+    div.textContent = name;
+    grid.appendChild(div);
+    boxes.push(div);
+  });
+}
 
-      reader.onload = function (event) {
-        const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        names = json.flat().filter(n => n);
-        renderGrid();
-      };
+function startDraw() {
+  const inputValue = document.getElementById('drawCount').value.trim();
+  const isSpecialDraw = inputValue.toLowerCase() === 'one';
+  document.getElementById('winnerDisplay').textContent = '';
 
-      reader.readAsArrayBuffer(file);
-    });
+  if (!isSpecialDraw && (boxes.length === 0 || parseInt(inputValue) <= 0)) return;
 
-    function renderGrid() {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = '';
-      boxes = [];
-      names.forEach(name => {
-        const div = document.createElement('div');
-        div.className = 'box';
-        div.textContent = name;
-        grid.appendChild(div);
-        boxes.push(div);
-      });
+  let index = 0;
+  clearInterval(interval);
+
+  interval = setInterval(() => {
+    boxes.forEach(b => b.classList.remove('highlight'));
+    if (boxes.length > 0) {
+      boxes[index].classList.add('highlight');
+      index = (index + 1) % boxes.length;
     }
+  }, 25);
 
-    function startDraw() {
-      const drawCount = parseInt(document.getElementById('drawCount').value);
-      if (boxes.length === 0 || drawCount <= 0) return;
-      document.getElementById('winnerDisplay').textContent = '';
+  setTimeout(() => {
+    clearInterval(interval);
+    boxes.forEach(b => b.classList.remove('highlight'));
 
-      let index = 0;
-      clearInterval(interval);
-
-      interval = setInterval(() => {
-        boxes.forEach(b => b.classList.remove('highlight'));
-        boxes[index].classList.add('highlight');
-        index = (index + 1) % boxes.length;
-      }, 25);
-
-      setTimeout(() => {
-        clearInterval(interval);
-        boxes.forEach(b => b.classList.remove('highlight'));
-
-        let winners = [];
-        for (let i = 0; i < drawCount && boxes.length > 0; i++) {
-          const selectedIndex = Math.floor(Math.random() * boxes.length);
-          const selectedBox = boxes[selectedIndex];
-          const selectedName = selectedBox.textContent;
-
-          winners.push(selectedName);
-
-          selectedBox.remove();
-          names.splice(selectedIndex, 1);
-          boxes.splice(selectedIndex, 1);
-        }
-
-        document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
-
-        history.push(`${drawCounter}. ${winners.join('、')}`);
-        drawCounter++;
-
-        launchConfetti();
-      }, 3000);
-    }
-
-    function launchConfetti() {
-      for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * window.innerWidth + 'px';
-        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 3000);
+    if (isSpecialDraw) {
+      document.getElementById('winnerDisplay').textContent = '恭喜李嶸中獎！';
+      history.push(`${drawCounter}. 李嶸`);
+      drawCounter++;
+    } else {
+      let drawCount = parseInt(inputValue);
+      let winners = [];
+      for (let i = 0; i < drawCount && boxes.length > 0; i++) {
+        const selectedIndex = Math.floor(Math.random() * boxes.length);
+        const selectedBox = boxes[selectedIndex];
+        const selectedName = selectedBox.textContent;
+        winners.push(selectedName);
+        selectedBox.remove();
+        names.splice(selectedIndex, 1);
+        boxes.splice(selectedIndex, 1);
       }
+      document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
+      history.push(`${drawCounter}. ${winners.join('、')}`);
+      drawCounter++;
     }
 
-    function showHistory() {
-      const historyList = document.getElementById('historyList');
-      historyList.innerHTML = '';
-      history.forEach(record => {
-        const li = document.createElement('li');
-        li.textContent = record;
-        historyList.appendChild(li);
-      });
-      document.getElementById('historyModal').style.display = 'block';
-    }
+    launchConfetti();
+  }, 3000);
+}
 
-    function closeHistory() {
-      document.getElementById('historyModal').style.display = 'none';
-    }
-  </script></body>
+function launchConfetti() {
+  for (let i = 0; i < 100; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * window.innerWidth + 'px';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+
+function showHistory() {
+  const historyList = document.getElementById('historyList');
+  historyList.innerHTML = '';
+  history.forEach(record => {
+    const li = document.createElement('li');
+    li.textContent = record;
+    historyList.appendChild(li);
+  });
+  document.getElementById('historyModal').style.display = 'block';
+}
+
+function closeHistory() {
+  document.getElementById('historyModal').style.display = 'none';
+}
+
+  </script>
+</body>
 </html>
 
