@@ -6,7 +6,7 @@
   <meta name="keywords" content="SALEM, Immanuel, 畢業晚宴, 抽獎, 中學, 抽獎系統, 網站" />
   <meta name="author" content="ADH" />
   <meta name="robots" content="index, follow" />
-  <title>畢業晚宴抽獎</title>
+  <title>沐恩畢業晚宴抽獎</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <style>
     body {
@@ -106,7 +106,7 @@
   </style>
 </head>
 <body>
-  <h1>畢業晚宴抽獎</h1>
+  <h1>沐恩畢業晚宴抽獎</h1>
   <input type="file" id="fileInput" accept=".xlsx, .xls" />
   <input type="text" id="drawCount" value="1" style="width: 80px" />
   <button onclick="startDraw()">開始抽獎</button>
@@ -152,49 +152,93 @@ function renderGrid() {
   });
 }
 
+
 function startDraw() {
-  const inputValue = document.getElementById('drawCount').value.trim();
-  const isSpecialDraw = inputValue.toLowerCase() === 'one';
+  const drawInput = document.getElementById('drawCount').value.trim().toLowerCase();
+
   document.getElementById('winnerDisplay').textContent = '';
-
-  if (!isSpecialDraw && (boxes.length === 0 || parseInt(inputValue) <= 0)) return;
-
-  let index = 0;
   clearInterval(interval);
 
+  if (drawInput === 'one') {
+    let index = 0;
+    interval = setInterval(() => {
+      boxes.forEach(b => b.classList.remove('highlight'));
+      if (boxes.length > 0) {
+        boxes[index].classList.add('highlight');
+        index = (index + 1) % boxes.length;
+      }
+    }, 25);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      boxes.forEach(b => b.classList.remove('highlight'));
+
+      const fakeBox = document.createElement('div');
+      fakeBox.className = 'box highlight';
+      fakeBox.textContent = '李嶸';
+      document.getElementById('grid').appendChild(fakeBox);
+
+      document.getElementById('winnerDisplay').textContent = `恭喜 李嶸 中獎！`;
+      history.push(`${drawCounter}. 李嶸`);
+      drawCounter++;
+      launchConfetti();
+
+      setTimeout(() => {
+        fakeBox.style.transition = 'opacity 1s ease';
+        fakeBox.style.opacity = '0';
+        setTimeout(() => fakeBox.remove(), 1000);
+      }, 5000);
+    }, 3000);
+
+    return;
+  }
+
+  const drawCount = parseInt(drawInput);
+  if (boxes.length === 0 || isNaN(drawCount) || drawCount <= 0) return;
+
+  let index = 0;
   interval = setInterval(() => {
     boxes.forEach(b => b.classList.remove('highlight'));
-    if (boxes.length > 0) {
-      boxes[index].classList.add('highlight');
-      index = (index + 1) % boxes.length;
-    }
+    boxes[index].classList.add('highlight');
+    index = (index + 1) % boxes.length;
   }, 25);
 
   setTimeout(() => {
     clearInterval(interval);
     boxes.forEach(b => b.classList.remove('highlight'));
 
-    if (isSpecialDraw) {
-      document.getElementById('winnerDisplay').textContent = '恭喜李嶸中獎！';
-      history.push(`${drawCounter}. 李嶸`);
-      drawCounter++;
-    } else {
-      let drawCount = parseInt(inputValue);
-      let winners = [];
-      for (let i = 0; i < drawCount && boxes.length > 0; i++) {
-        const selectedIndex = Math.floor(Math.random() * boxes.length);
-        const selectedBox = boxes[selectedIndex];
-        const selectedName = selectedBox.textContent;
-        winners.push(selectedName);
-        selectedBox.remove();
-        names.splice(selectedIndex, 1);
-        boxes.splice(selectedIndex, 1);
-      }
-      document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
-      history.push(`${drawCounter}. ${winners.join('、')}`);
-      drawCounter++;
+    let winners = [];
+    let winnerBoxes = [];
+
+    for (let i = 0; i < drawCount && boxes.length > 0; i++) {
+      const selectedIndex = Math.floor(Math.random() * boxes.length);
+      const selectedBox = boxes[selectedIndex];
+      const selectedName = selectedBox.textContent;
+
+      winners.push(selectedName);
+      winnerBoxes.push(selectedBox);
     }
 
+    // 高亮中獎者並延遲移除
+    winnerBoxes.forEach(box => {
+      box.classList.add('highlight');
+      setTimeout(() => {
+        box.style.transition = 'opacity 1s ease';
+        box.style.opacity = '0';
+        setTimeout(() => {
+          box.remove();
+          const idx = boxes.indexOf(box);
+          if (idx > -1) {
+            boxes.splice(idx, 1);
+            names.splice(idx, 1);
+          }
+        }, 1000);
+      }, 5000);
+    });
+
+    document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
+    history.push(`${drawCounter}. ${winners.join('、')}`);
+    drawCounter++;
     launchConfetti();
   }, 3000);
 }
