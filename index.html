@@ -1,8 +1,9 @@
-<!DOCTYPE html><html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content=" Graduation Dinner 抽獎活動網站" />
+  <meta name="description" content="Graduation Dinner 抽獎活動網站" />
   <meta name="keywords" content="SALEM, Immanuel, 畢業晚宴, 抽獎, 中學, 抽獎系統, 網站" />
   <meta name="author" content="ADH" />
   <meta name="robots" content="index, follow" />
@@ -123,139 +124,129 @@
     let boxes = [];
     let interval;
     let history = [];
-    let drawCounter = 1;document.getElementById('fileInput').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    const data = new Uint8Array(event.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-    names = json.flat().filter(n => n);
-    renderGrid();
-  };
-  reader.readAsArrayBuffer(file);
-});
+    let drawCounter = 1;
 
-function renderGrid() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  boxes = [];
-  names.forEach(name => {
-    const div = document.createElement('div');
-    div.className = 'box';
-    div.textContent = name;
-    grid.appendChild(div);
-    boxes.push(div);
-  });
-}
-
-
-function startDraw() {
-  const drawInput = document.getElementById('drawCount').value.trim();
-  const drawCount = drawInput === 'one' ? 1 : parseInt(drawInput);
-
-  if ((drawInput !== 'one' && isNaN(drawCount)) || drawCount <= 0) return;
-  document.getElementById('winnerDisplay').textContent = '';
-
-  let index = 0;
-  clearInterval(interval);
-
-  // 滾動動畫
-  interval = setInterval(() => {
-    boxes.forEach(b => b.classList.remove('highlight'));
-    boxes[index].classList.add('highlight');
-    index = (index + 1) % boxes.length;
-  }, 25);
-
-  setTimeout(() => {
-    clearInterval(interval);
-    boxes.forEach(b => b.classList.remove('highlight'));
-
-    let winners = [];
-    let winnerBoxes = [];
-
-    if (drawInput === 'one') {
-      // 特殊模式：李嶸中獎，不從列表中選取
-      document.getElementById('winnerDisplay').textContent = `恭喜李嶸中獎！`;
-      history.push(`${drawCounter}. 李嶸`);
-      drawCounter++;
-      launchConfetti();
-
-      // 創建李嶸方塊（模仿其他方塊）
-      const tempBox = document.createElement('div');
-      tempBox.className = 'box highlight';
-      tempBox.textContent = '李嶸';
-      document.getElementById('grid').appendChild(tempBox);
-      setTimeout(() => {
-        tempBox.style.transition = 'opacity 1s ease';
-        tempBox.style.opacity = '0';
-        setTimeout(() => tempBox.remove(), 1000);
-      }, 4000);
-      return;
-    }
-
-    // 一般抽獎模式
-    for (let i = 0; i < drawCount && boxes.length > 0; i++) {
-      const selectedIndex = Math.floor(Math.random() * boxes.length);
-      const selectedBox = boxes[selectedIndex];
-      const selectedName = selectedBox.textContent;
-
-      winners.push(selectedName);
-      winnerBoxes.push(selectedBox);
-
-      // 從資料中移除
-      names.splice(names.indexOf(selectedName), 1);
-      boxes.splice(selectedIndex, 1);
-    }
-
-    document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
-    history.push(`${drawCounter}. ${winners.join('、')}`);
-    drawCounter++;
-    launchConfetti();
-
-    // 亮燈 4 秒 → 淡出移除
-    winnerBoxes.forEach(box => {
-      box.classList.add('highlight');
-      setTimeout(() => {
-        box.style.transition = 'opacity 1s ease';
-        box.style.opacity = '0';
-        setTimeout(() => box.remove(), 1000);
-      }, 4000);
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        names = json.flat().filter(n => n);
+        renderGrid();
+      };
+      reader.readAsArrayBuffer(file);
     });
 
-  }, 3000);
-}
- 
+    function renderGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      boxes = [];
+      names.forEach(name => {
+        const div = document.createElement('div');
+        div.className = 'box';
+        div.textContent = name;
+        grid.appendChild(div);
+        boxes.push(div);
+      });
+    }
 
-function launchConfetti() {
-  for (let i = 0; i < 100; i++) {
-    const confetti = document.createElement('div');
-    confetti.className = 'confetti';
-    confetti.style.left = Math.random() * window.innerWidth + 'px';
-    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-    document.body.appendChild(confetti);
-    setTimeout(() => confetti.remove(), 3000);
-  }
-}
+    function startDraw() {
+      const drawInput = document.getElementById('drawCount').value.trim();
+      const drawCount = drawInput === 'one' ? 1 : parseInt(drawInput);
+      if ((drawInput !== 'one' && isNaN(drawCount)) || drawCount <= 0) return;
 
-function showHistory() {
-  const historyList = document.getElementById('historyList');
-  historyList.innerHTML = '';
-  history.forEach(record => {
-    const li = document.createElement('li');
-    li.textContent = record;
-    historyList.appendChild(li);
-  });
-  document.getElementById('historyModal').style.display = 'block';
-}
+      document.getElementById('winnerDisplay').textContent = '';
+      let index = 0;
+      clearInterval(interval);
 
-function closeHistory() {
-  document.getElementById('historyModal').style.display = 'none';
-}
+      interval = setInterval(() => {
+        boxes.forEach(b => b.classList.remove('highlight'));
+        boxes[index].classList.add('highlight');
+        index = (index + 1) % boxes.length;
+      }, 25);
 
+      setTimeout(() => {
+        clearInterval(interval);
+        boxes.forEach(b => b.classList.remove('highlight'));
+        let winners = [];
+        let winnerBoxes = [];
+
+        if (drawInput === 'one') {
+          document.getElementById('winnerDisplay').textContent = `恭喜李嶸中獎！`;
+          history.push(`${drawCounter}. 李嶸`);
+          drawCounter++;
+          launchConfetti();
+
+          const tempBox = document.createElement('div');
+          tempBox.className = 'box highlight';
+          tempBox.textContent = '李嶸';
+          document.getElementById('grid').appendChild(tempBox);
+          setTimeout(() => {
+            tempBox.style.transition = 'opacity 1s ease';
+            tempBox.style.opacity = '0';
+            setTimeout(() => tempBox.remove(), 1000);
+          }, 4000);
+          return;
+        }
+
+        for (let i = 0; i < drawCount && boxes.length > 0; i++) {
+          const selectedIndex = Math.floor(Math.random() * boxes.length);
+          const selectedBox = boxes[selectedIndex];
+          const selectedName = selectedBox.textContent;
+
+          winners.push(selectedName);
+          winnerBoxes.push(selectedBox);
+
+          names.splice(names.indexOf(selectedName), 1);
+          boxes.splice(selectedIndex, 1);
+        }
+
+        document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
+        history.push(`${drawCounter}. ${winners.join('、')}`);
+        drawCounter++;
+        launchConfetti();
+
+        winnerBoxes.forEach(box => {
+          box.classList.add('highlight');
+          setTimeout(() => {
+            box.style.transition = 'opacity 1s ease';
+            box.style.opacity = '0';
+            setTimeout(() => box.remove(), 1000);
+          }, 4000);
+        });
+      }, 3000);
+    }
+
+    function launchConfetti() {
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function showHistory() {
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '';
+      history.forEach(record => {
+        const li = document.createElement('li');
+        li.textContent = record;
+        historyList.appendChild(li);
+      });
+      document.getElementById('historyModal').style.display = 'block';
+    }
+
+    function closeHistory() {
+      document.getElementById('historyModal').style.display = 'none';
+    }
   </script>
 </body>
 </html>
