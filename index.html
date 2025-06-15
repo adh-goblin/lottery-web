@@ -154,49 +154,16 @@ function renderGrid() {
 
 
 function startDraw() {
-  const drawInput = document.getElementById('drawCount').value.trim().toLowerCase();
+  const drawInput = document.getElementById('drawCount').value.trim();
+  const drawCount = drawInput === 'one' ? 1 : parseInt(drawInput);
 
+  if ((drawInput !== 'one' && isNaN(drawCount)) || drawCount <= 0) return;
   document.getElementById('winnerDisplay').textContent = '';
-  clearInterval(interval);
-
-  // 彩蛋：李嶸
-  if (drawInput === 'one') {
-    let index = 0;
-    interval = setInterval(() => {
-      boxes.forEach(b => b.classList.remove('highlight'));
-      if (boxes.length > 0) {
-        boxes[index].classList.add('highlight');
-        index = (index + 1) % boxes.length;
-      }
-    }, 25);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      boxes.forEach(b => b.classList.remove('highlight'));
-
-      const fakeBox = document.createElement('div');
-      fakeBox.className = 'box highlight';
-      fakeBox.textContent = '李嶸';
-      document.getElementById('grid').appendChild(fakeBox);
-
-      document.getElementById('winnerDisplay').textContent = `恭喜 李嶸 中獎！`;
-      history.push(`${drawCounter}. 李嶸`);
-      drawCounter++;
-      launchConfetti();
-
-      setTimeout(() => {
-        fakeBox.style.transition = 'opacity 1s ease';
-        fakeBox.style.opacity = '0';
-        setTimeout(() => fakeBox.remove(), 1000);
-      }, 5000);
-    }, 3000);
-    return;
-  }
-
-  const drawCount = parseInt(drawInput);
-  if (boxes.length === 0 || isNaN(drawCount) || drawCount <= 0) return;
 
   let index = 0;
+  clearInterval(interval);
+
+  // 滾動動畫
   interval = setInterval(() => {
     boxes.forEach(b => b.classList.remove('highlight'));
     boxes[index].classList.add('highlight');
@@ -207,53 +174,61 @@ function startDraw() {
     clearInterval(interval);
     boxes.forEach(b => b.classList.remove('highlight'));
 
-    // ✅ 用 names 建立抽獎池，避免資料不一致與重複問題
-    let drawPool = [...names];
     let winners = [];
     let winnerBoxes = [];
 
-    for (let i = 0; i < drawCount && drawPool.length > 0; i++) {
-      const selectedIndex = Math.floor(Math.random() * drawPool.length);
-      const selectedName = drawPool[selectedIndex];
+    if (drawInput === 'one') {
+      // 特殊模式：李嶸中獎，不從列表中選取
+      document.getElementById('winnerDisplay').textContent = `恭喜李嶸中獎！`;
+      history.push(`${drawCounter}. 李嶸`);
+      drawCounter++;
+      launchConfetti();
 
-      winners.push(selectedName);
-
-      // 找出對應的 box，並準備動畫
-      const matchedBox = boxes.find(b => b.textContent === selectedName);
-      if (matchedBox) winnerBoxes.push(matchedBox);
-
-      // 從抽獎池中移除這個人
-      drawPool.splice(selectedIndex, 1);
+      // 創建李嶸方塊（模仿其他方塊）
+      const tempBox = document.createElement('div');
+      tempBox.className = 'box highlight';
+      tempBox.textContent = '李嶸';
+      document.getElementById('grid').appendChild(tempBox);
+      setTimeout(() => {
+        tempBox.style.transition = 'opacity 1s ease';
+        tempBox.style.opacity = '0';
+        setTimeout(() => tempBox.remove(), 1000);
+      }, 4000);
+      return;
     }
 
-    // 更新 boxes 和 names，移除中獎者
-    winners.forEach(name => {
-      const index = names.indexOf(name);
-      if (index !== -1) {
-        names.splice(index, 1);
-        boxes[index].remove();
-        boxes.splice(index, 1);
-      }
-    });
+    // 一般抽獎模式
+    for (let i = 0; i < drawCount && boxes.length > 0; i++) {
+      const selectedIndex = Math.floor(Math.random() * boxes.length);
+      const selectedBox = boxes[selectedIndex];
+      const selectedName = selectedBox.textContent;
 
-    // 顯示中獎訊息
+      winners.push(selectedName);
+      winnerBoxes.push(selectedBox);
+
+      // 從資料中移除
+      names.splice(names.indexOf(selectedName), 1);
+      boxes.splice(selectedIndex, 1);
+    }
+
     document.getElementById('winnerDisplay').textContent = `恭喜 ${winners.join('、')} 中獎！`;
     history.push(`${drawCounter}. ${winners.join('、')}`);
     drawCounter++;
     launchConfetti();
 
-    // 中獎方塊亮燈 5 秒 → 消失
+    // 亮燈 4 秒 → 淡出移除
     winnerBoxes.forEach(box => {
       box.classList.add('highlight');
       setTimeout(() => {
         box.style.transition = 'opacity 1s ease';
         box.style.opacity = '0';
         setTimeout(() => box.remove(), 1000);
-      }, 5000);
+      }, 4000);
     });
+
   }, 3000);
 }
-    
+ 
 
 function launchConfetti() {
   for (let i = 0; i < 100; i++) {
